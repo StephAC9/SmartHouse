@@ -53,7 +53,7 @@ const state = {
         externalTemp: -5,
         electricalConsumption: 400
     },
-    /* alarmFire: {
+    alarmFire: {
         deviceID: 1,
         name: 'Fire alarm',
         type: 'Alarm',
@@ -73,8 +73,8 @@ const state = {
         type: 'Alarm',
         status: 1,
         flag: false
-    },*/
-} 
+    },
+}
 
 
 const getters = {
@@ -136,10 +136,10 @@ const actions = {
         }
 
         axios.put("https://jsonplaceholder.typicode.com/todos/1", todo)
-            .then(function(response) {
+            .then(function (response) {
                 console.log(response);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log(error);
             });
 
@@ -199,32 +199,32 @@ const actions = {
 
         // })
 
-        /*         const command = {
-                    username: payload.username,
-                    email: payload.email,
-                    firstName: payload.firstName,
-                    lastName: payload.lastName,
-                    password: payload.password,
-                }
-                const json = JSON.stringify(command)
-                const blob = new Blob([json], {
-                    type: 'application/json'
-                });
+        const command = {
+            username: payload.username,
+            email: payload.email,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            password: payload.password,
+        }
+        const json = JSON.stringify(command)
+        const blob = new Blob([json], {
+            type: 'application/json'
+        });
 
-                const data = new FormData();
-                data.append("document", blob);
-                axios({
-                        method: 'POST',
-                        url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/create',
-                        data: blob,
-                    })
+        const data = new FormData();
+        data.append("document", blob);
+        axios({
+                method: 'POST',
+                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/create',
+                data: blob,
+            })
 
-                    .then(function (response) {
-                        console.log(response);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    }); */
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
     },
 
@@ -234,44 +234,44 @@ const actions = {
         console.log('in sign in')
         firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
 
-        .then(
-            userCredential => {
-                commit('SIGNIN_SUCCESS', true)
-                commit('SET_USER_NOT_FOUND', false)
-                commit('IS_ACTIVE', true)
-                const user = userCredential.user
-                console.log(user.displayName)
-                const rooms = []
-                firebase.database().ref('Rooms').child(user.uid)
-                    .on('value', (snapshot) => {
-                        snapshot.forEach((childSnapshot) => {
-                            rooms.push(childSnapshot.val())
+            .then(
+                userCredential => {
+                    commit('SIGNIN_SUCCESS', true)
+                    commit('SET_USER_NOT_FOUND', false)
+                    commit('IS_ACTIVE', true)
+                    const user = userCredential.user
+                    console.log(user.displayName)
+                    const rooms = []
+                    firebase.database().ref('Rooms').child(user.uid)
+                        .on('value', (snapshot) => {
+                            snapshot.forEach((childSnapshot) => {
+                                rooms.push(childSnapshot.val())
 
+                            });
                         });
-                    });
 
-                console.log(rooms)
-                const newUser = {
-                    id: user.uid,
-                    name: user.displayName,
-                    rooms: rooms
-                }
-                console.log(newUser.rooms)
+                    console.log(rooms)
+                    const newUser = {
+                        id: user.uid,
+                        name: user.displayName,
+                        rooms: rooms
+                    }
+                    console.log(newUser.rooms)
 
-                commit('SET_CURRENT_USER', newUser)
-            })
+                    commit('SET_CURRENT_USER', newUser)
+                })
 
 
-        .catch(
-            error => {
-                commit('IS_ACTIVE', false)
-                console.log(error.code)
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            .catch(
+                error => {
+                    commit('IS_ACTIVE', false)
+                    console.log(error.code)
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
 
-                    commit('SET_USER_NOT_FOUND', true)
-                }
-                commit('SIGNIN_SUCCESS', false)
-            })
+                        commit('SET_USER_NOT_FOUND', true)
+                    }
+                    commit('SIGNIN_SUCCESS', false)
+                })
     },
 
     fetchRooms({
@@ -378,13 +378,13 @@ const actions = {
         }
         var ref = firebase.database().ref('Rooms').child(payload.userId)
 
-        .on('value', (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-                if (childSnapshot.key === payload.roomId) {
-                    childSnapshot.ref.remove()
-                }
+            .on('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.key === payload.roomId) {
+                        childSnapshot.ref.remove()
+                    }
+                });
             });
-        });
 
     },
 
@@ -395,16 +395,16 @@ const actions = {
 
         firebase.database().ref('Rooms').child(payload.userId)
 
-        .on('value', (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-                if (childSnapshot.key === payload.roomId) {
-                    room = childSnapshot.val()
-                }
-                console.log(room)
+            .on('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.key === payload.roomId) {
+                        room = childSnapshot.val()
+                    }
+                    console.log(room)
 
-                commit('SET_CURRENT_ROOM', room)
+                    commit('SET_CURRENT_ROOM', room)
+                });
             });
-        });
     },
 
     addToUserFavorite({
@@ -413,18 +413,18 @@ const actions = {
 
         firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Devices')
 
-        .on('value', (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-                if (childSnapshot.key === payload.deviceId) {
-                    var currentDevice = childSnapshot.val()
-                }
+            .on('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.key === payload.deviceId) {
+                        var currentDevice = childSnapshot.val()
+                    }
 
-                firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Favorites').push(currentDevice)
-                    .catch((err) => {
-                        console.log(err.message)
-                    })
+                    firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Favorites').push(currentDevice)
+                        .catch((err) => {
+                            console.log(err.message)
+                        })
+                });
             });
-        });
 
     },
 
