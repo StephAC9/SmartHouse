@@ -181,6 +181,7 @@ export default {
   }
 
   .element{
+    cursor: pointer;
     color:rgb(46, 44, 44);
   }
 
