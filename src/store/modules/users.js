@@ -74,11 +74,7 @@ const state = {
         status: 1,
         flag: false
     },
-<<<<<<< HEAD
-} 
-=======
 }
->>>>>>> c15c99e8c68de35fe520c8f3fe05ef2e07fd1a5d
 
 
 const getters = {
