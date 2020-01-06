@@ -100,7 +100,7 @@
             </v-dialog>
           </v-form>
         </v-card-text>
-        <v-btn @click="gotoLogin" text style="margin: 10px">Go back to login</v-btn>
+        <v-btn @click="gotoLogin" text style="margin: 10px">Go to login</v-btn>
       </v-card>
 
       <v-dialog v-model="emailExist" hide-overlay persistent max-width="290">
