@@ -215,7 +215,7 @@ const actions = {
         data.append("document", blob);
         axios({
                 method: 'POST',
-                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/create',
+                url: 'http://194.47.40.234:5678/HouseServer_war_exploded/service/user/create',
                 data: blob,
             })
 
@@ -232,7 +232,7 @@ const actions = {
         commit
     }, payload) {
         console.log('in sign in')
-        firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+        /* firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
 
             .then(
                 userCredential => {
@@ -271,10 +271,10 @@ const actions = {
                         commit('SET_USER_NOT_FOUND', true)
                     }
                     commit('SIGNIN_SUCCESS', false)
-                })
+                }) */
 
-        /* 
-                const command = {
+
+        const command = {
             username: payload.username,
             password: payload.password,
         }
@@ -287,17 +287,23 @@ const actions = {
         data.append("document", blob);
         axios({
                 method: 'PUT',
-                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/login',
+                url: 'http://194.47.40.234:5678/HouseServer_war_exploded/service/user/login',
                 data: blob,
             })
-            .then(
-                userCredential => {
-                    commit('SIGNIN_SUCCESS', true)
-                    commit('SET_USER_NOT_FOUND', false)
-                    commit('IS_ACTIVE', true)
-                    const user = userCredential.user
-                    console.log(user.displayName)
-                */
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        /*    .then(
+               userCredential => {
+                   commit('SIGNIN_SUCCESS', true)
+                   commit('SET_USER_NOT_FOUND', false)
+                   commit('IS_ACTIVE', true)
+                   const user = userCredential.user
+                   console.log(user.displayName)
+               }) */
     },
 
     fetchRooms({

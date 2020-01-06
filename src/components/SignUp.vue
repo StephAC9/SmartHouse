@@ -35,7 +35,7 @@
             </div>
             <div class="sign-detail">
               <v-text-field
-                v-model="firstname"
+                v-model="firstName"
                 :rules="nameRules"
                 id="firstName"
                 color="dark"
@@ -47,7 +47,7 @@
             </div>
             <div class="sign-detail">
               <v-text-field
-                v-model="lastname"
+                v-model="lastName"
                 :rules="nameRules"
                 id="lastName"
                 color="dark"
@@ -136,8 +136,9 @@ export default {
     return {
       emailExist: false,
       loadingDialog: false,
-
-      fullname: "",
+      firstName: "",
+      lastName: "",
+      username: "",
       email: "",
       // phoneNum:'',
       password: "",
@@ -210,8 +211,8 @@ export default {
         this.$store.dispatch("users/signUp", {
           username: this.username,
           email: this.email,
-          firstName: this.firstname,
-          lastName: this.lastname,
+          firstName: this.firstName,
+          lastName: this.lastName,
           password: this.password
         });
         this.loadingDialog = true;

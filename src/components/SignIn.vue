@@ -15,25 +15,23 @@
                 <v-icon>{{ icons.mdiAccount }}</v-icon>
               </span>
 
-              <v-text-field
+              <!--               <v-text-field
                 v-model="email"
                 :rules="emailRules"
                 color="dark"
                 label="Email"
                 name="email"
                 type="email"
-              ></v-text-field>
+              ></v-text-field>-->
 
-              <!--  USE THIS TO CHANGE EMAIL TO USERNAME AND REMOVE ABOVE
-                                    <v-text-field
-                                    v-model="username"
-                                    :rules="nameRules"
-                                    color="dark"
-                                    label="Username"
-                                    name="username"
-                                    type="name" >
-                                </v-text-field>
-              -->
+              <v-text-field
+                v-model="username"
+                :rules="nameRules"
+                color="dark"
+                label="Username"
+                name="username"
+                type="name"
+              ></v-text-field>
             </div>
             <div class="login-detail">
               <span style="margin-top:24px;margin-right:10px">
@@ -109,7 +107,7 @@ export default {
   data() {
     return {
       show_loginFailed_dialog: false,
-      email: "",
+      username: "",
       //CHANGE EMAIL TO: username: '',
       password: "",
       icons: {
@@ -117,19 +115,20 @@ export default {
         mdiDelete,
         mdiLock
       },
-      emailRules: [
+      /*       emailRules: [
         v =>
           /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
             v.toLowerCase()
           ) || "Invalid E-mail address"
+      ] */
+
+      nameRules: [
+        v => !!v || "Name is required",
+        v =>
+          new RegExp("^(.{3,25}$)").test(v) ||
+          "Name must be atleast 3 and atmost 25 characters long",
+        v => /^([a-ö']+(-| )?)+$/i.test(v) || "Name is not valid"
       ]
-      /* USE THIS TO CHANGE EMAIL TO USENAME AND REMOVE ABOVE
-                nameRules: [
-                v => !!v || 'Name is required',
-                v => new RegExp('^(.{3,25}$)').test(v) || 'Name must be atleast 3 and atmost 25 characters long',
-                v => /^([a-ö']+(-| )?)+$/i.test(v) || 'Name is not valid'
-            ],
-            */
     };
   },
   computed: {
@@ -142,13 +141,16 @@ export default {
     logMeIn() {
       console.log("signing in...");
       console.log(this.getUser_not_found);
-      this.$store.dispatch("users/signIn", {
+      /* this.$store.dispatch("users/signIn", {
         email: this.email,
         password: this.password
-      });
+      }); */
 
       //USE THIS TO USE USERNAME INSTEAD OF EMAIL AND REMOVE ABOVE
-      //this.$store.dispatch('users/signIn',{username: this.username, password: this.password})
+      this.$store.dispatch("users/signIn", {
+        username: this.username,
+        password: this.password
+      });
 
       setTimeout(() => {
         if (this.getUser_not_found === true) {
