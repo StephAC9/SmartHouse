@@ -53,7 +53,7 @@ const state = {
         externalTemp: -5,
         electricalConsumption: 400
     },
-    /* alarmFire: {
+    alarmFire: {
         deviceID: 1,
         name: 'Fire alarm',
         type: 'Alarm',
@@ -73,7 +73,7 @@ const state = {
         type: 'Alarm',
         status: 1,
         flag: false
-    },*/
+    },
 } 
 
 

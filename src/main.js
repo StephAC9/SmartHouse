@@ -13,6 +13,7 @@ import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import ProfilePage from './components/ProfilePage'
+import Rooms from './components/Rooms'
 
 Vue.use(VueAxios, axios)
 Vue.use(VueRouter)
@@ -56,6 +57,13 @@ const routes = [{
         path: '/profilepage',
         name: 'profilepage',
         component: ProfilePage,
+        //meta: { requiresAuth: true }
+    },
+
+    {
+        path: '/rooms',
+        name: 'rooms',
+        component: Rooms,
         //meta: { requiresAuth: true }
     },
 ]
