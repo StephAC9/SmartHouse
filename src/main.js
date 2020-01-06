@@ -12,6 +12,7 @@ import DevicesBoard from './components/DevicesBoard'
 import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import ProfilePage from './components/ProfilePage'
 
 Vue.use(VueAxios, axios)
 Vue.use(VueRouter)
@@ -49,6 +50,12 @@ const routes = [{
         path: '/testhouse',
         name: 'test-house',
         component: TestHouse,
+        //meta: { requiresAuth: true }
+    },
+    {
+        path: '/profilepage',
+        name: 'profilepage',
+        component: ProfilePage,
         //meta: { requiresAuth: true }
     },
 ]

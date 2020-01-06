@@ -138,7 +138,7 @@ export default {
         user(value){
           if(value !== null || value !== undefined){
               setTimeout(()=>{
-              this.$router.push({name:'dashboard'})
+              this.$router.push({name:'profilepage'})
             },1000);
           }
         },
