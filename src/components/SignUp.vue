@@ -152,7 +152,7 @@ export default {
         v =>
           new RegExp("^(.{3,25}$)").test(v) ||
           "Name must be atleast 3 and atmost 25 characters long",
-        v => /^([a-z']+(-| )?)+$/i.test(v) || "Name is not valid"
+        v => /^([a-ö']+(-| )?)+$/i.test(v) || "Name is not valid"
       ],
       emailRules: [
         v => !!v || "E-mail is required",

@@ -170,7 +170,7 @@ export default {
 
   watch: {
     getsignInSuccessAlert(value) {
-      if (value ) {
+      if (value) {
         setTimeout(() => {
           this.$router.push({ name: "profilepage" });
         }, 1000);
