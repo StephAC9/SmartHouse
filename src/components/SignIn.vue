@@ -169,8 +169,8 @@ export default {
   },
 
   watch: {
-    user(value) {
-      if (value !== null || value !== undefined) {
+    getsignInSuccessAlert(value) {
+      if (value ) {
         setTimeout(() => {
           this.$router.push({ name: "profilepage" });
         }, 1000);

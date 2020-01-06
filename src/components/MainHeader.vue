@@ -22,7 +22,7 @@
                 dark
                 v-on="on">
                 <v-icon>{{ icons.mdiAccount }}</v-icon> 
-                <label class="user-name">{{user.name}}</label>
+                <label class="user-name">{{userName}}</label>
               </v-btn>
             </template>
             <v-list>
@@ -93,7 +93,7 @@ export default {
       }
     },
     computed:{
-        ...mapGetters(['user']),
+        ...mapGetters(['user','userName']),
         ...mapGetters(['isActive']),
     },
 

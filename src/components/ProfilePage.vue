@@ -16,39 +16,119 @@ src="../assets/animated-house.png">
      
     <v-card-title>Personal Details</v-card-title>
 
-    <v-card-text>
-     {{username}}
+    <v-card-text style="font-size:20px">
+     {{userName}}
     </v-card-text>
 
     <v-divider class="mx-4"></v-divider>
-
-    <v-list v-for="(house, h) in houses" :key = "h" style="background:rgb(220, 220, 220)">
-    <v-card-text class="houseMessage">
-        {{ house.message }}
-    </v-card-text>
-
-    <v-card-actions class ="justify-center">
-      <v-btn 
-          style="background-color: lightgray"
-        @click="goInHouse(house.message)"
-      >Go in
-      </v-btn>
-    </v-card-actions>
-
-    <v-divider class="mx-4"></v-divider>
-    </v-list>
 
     <v-card-actions class="justify-center">
-    <v-btn 
+   <!--  <v-btn 
         style="margin-right: 50px"
         class="button-fix"
-    >New house
-    </v-btn>
+    >ADD A HOUSE
+    </v-btn> -->
+<!--     <AddHouse></AddHouse>
+ -->    
+  <div class="dialog">
+    <v-row justify="center">
+        <v-btn
+          color="light-grey"
+          dark
+          @click.stop="dialog1 = true"
+        >
+        ADD NEW HOUSE
+        </v-btn>
 
-    <v-btn 
+        <v-dialog
+          v-model="dialog1"
+          max-width="290"
+        >
+          <v-card>
+
+            <v-card-text>
+                <div >
+                  <v-text-field
+                    v-model="houseName1"
+                    color="dark"
+                    label="Add a name"
+                    name="HouseName1"
+                    type="text"
+                  ></v-text-field>
+                
+                  <v-text-field
+                    v-model="housePassword"
+                    color="dark"
+                    label="House Password"
+                    name="HousePassword"
+                    type="password"
+                  ></v-text-field>
+                </div>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                color="green darken-1"
+                text
+                @click="addHouse"
+              >
+                SUBMIT
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+  </div>
+
+    <!-- <v-btn 
         style="margin-left: 50px"
         class="button-fix"
-    >Load house</v-btn>
+    > ACCESS EXISTING HOUSE</v-btn> -->
+    <div class="dialog">
+    <v-row justify="center">
+        <v-btn
+          color="light-grey"
+          dark
+          @click.stop="dialog2 = true"
+        >
+        ACCESS EXISTING HOUSE
+        </v-btn>
+
+        <v-dialog
+          v-model="dialog2"
+          max-width="290"
+        >
+          <v-card>
+
+            <v-card-text>
+                <div >
+                  <v-text-field
+                    v-model="houseName2"
+                    color="dark"
+                    label="Add a name"
+                    name="HouseName2"
+                    type="text"
+                  ></v-text-field>
+                </div>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                color="green darken-1"
+                text
+                @click="accessHouse"
+              >
+                SUBMIT
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+  </div>
     </v-card-actions>
     </v-card>
 
@@ -57,12 +137,13 @@ src="../assets/animated-house.png">
     </template>
 <script>
 import {createNamespacedHelpers} from 'vuex';
-
-const {mapGetters} = createNamespacedHelpers('test')
+const {mapGetters} = createNamespacedHelpers('users')
+import AddHouse from './AddHouse'
   export default {
-    
+    components:{
+      AddHouse
+    },
     data: () => ({
-      username: 'Sven',
       loading: false,
       selection: 1,
       selectedImage: null,
@@ -71,14 +152,22 @@ const {mapGetters} = createNamespacedHelpers('test')
           {message: 'Strandgatan 45b'},
           {message: 'Hästvägen 11'},
           {message: 'Buskstigen 1'}
-      ]
+      ],
+      dialog1: false,
+      dialog2: false,
+      houseName1: '',
+      houseName2: '',
+      housePassword:'',
     }),
     
 
     computed:{
-      ...mapGetters(['getCurrentOwner','isTokenExpired']),
+      ...mapGetters(['getCurrentOwner','isTokenExpired','userName']),
       ...mapGetters('getHouses')
     },
+
+
+
 
     watch:{
     //   isTokenExpired(val){
@@ -103,6 +192,17 @@ const {mapGetters} = createNamespacedHelpers('test')
         setTimeout(() => this.loading = false, 2000)
         this.$router.push('/rooms')
       },
+
+      accessHouse(){
+        this.dialog2 = false
+        const token = localStorage.getItem('token')
+        this.$store.dispatch('users/accessHouse',{userName: this.userName,houseName: this.houseName2, token:token})
+      },
+      addHouse(){
+        this.dialog1 = false
+        const token = localStorage.getItem('token')
+        this.$store.dispatch('users/addHouse',{userName: this.userName,houseName: this.houseName1,password: this.housePassword,token:token})
+      }
     }
 }
 
@@ -120,5 +220,10 @@ const {mapGetters} = createNamespacedHelpers('test')
     background-color: lightgray !important;
     font-size: 10px;
     height: 25px !important;
+    margin: 20px;
+}
+
+.dialog{
+  margin: 15px;
 }
 </style>
