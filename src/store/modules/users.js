@@ -16,12 +16,36 @@ const state = {
     favorites: [],
 
 
-    houseDevices: [
-        { deviceId: '01', status: 0, deviceName: 'Indoor Lamp', flag: false },
-        { deviceId: '02', status: 0, deviceName: 'Outdoor Lamp', flag: false },
-        { deviceId: '06', status: 0, deviceName: 'Stove', flag: false },
-        { deviceId: '08', status: 0, deviceName: 'Window', flag: false },
-        { deviceId: '09', status: 0, deviceName: 'Radiator', flag: false },
+    houseDevices: [{
+            deviceId: '01',
+            status: 0,
+            deviceName: 'Indoor Lamp',
+            flag: false
+        },
+        {
+            deviceId: '02',
+            status: 0,
+            deviceName: 'Outdoor Lamp',
+            flag: false
+        },
+        {
+            deviceId: '06',
+            status: 0,
+            deviceName: 'Stove',
+            flag: false
+        },
+        {
+            deviceId: '08',
+            status: 0,
+            deviceName: 'Window',
+            flag: false
+        },
+        {
+            deviceId: '09',
+            status: 0,
+            deviceName: 'Radiator',
+            flag: false
+        },
 
     ],
     sensor: {
@@ -54,8 +78,12 @@ const state = {
 
 
 const getters = {
-    isActive(state) { return state.isActive },
-    user(state) { return state.user },
+    isActive(state) {
+        return state.isActive
+    },
+    user(state) {
+        return state.user
+    },
     rooms(state) {
         return state.user.rooms
     },
@@ -65,14 +93,24 @@ const getters = {
     getsignInSuccessAlert(state) {
         return state.signInSuccessAlert
     },
-    isEmailAlreadyExist(state) { return state.isEmailExist },
-    getUser_not_found(state) { return state.user_not_found },
+    isEmailAlreadyExist(state) {
+        return state.isEmailExist
+    },
+    getUser_not_found(state) {
+        return state.user_not_found
+    },
 
-    currentRoom(state) { return state.currentRoom },
+    currentRoom(state) {
+        return state.currentRoom
+    },
 
-    devicesList(state) { return state.devices },
+    devicesList(state) {
+        return state.devices
+    },
 
-    favorites(state) { return state.favorites },
+    favorites(state) {
+        return state.favorites
+    },
 
 
     houseDevices: state => state.houseDevices,
@@ -86,7 +124,9 @@ const getters = {
 
 const actions = {
 
-    async lampSwitch({ commit }, payload) {
+    async lampSwitch({
+        commit
+    }, payload) {
 
         const todo = {
             userId: 1,
@@ -96,10 +136,10 @@ const actions = {
         }
 
         axios.put("https://jsonplaceholder.typicode.com/todos/1", todo)
-            .then(function(response) {
+            .then(function (response) {
                 console.log(response);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log(error);
             });
 
@@ -118,88 +158,125 @@ const actions = {
            }); */
     },
 
-    resetSignUpSuccessAlert({ commit }) {
+    resetSignUpSuccessAlert({
+        commit
+    }) {
         commit('SIGNUP_SUCCESS', false)
     },
-    resetSignInSuccessAlert({ commit }) {
+    resetSignInSuccessAlert({
+        commit
+    }) {
         commit('SIGNIN_SUCCESS', false)
     },
 
 
-    signUp({ commit }, payload) {
-        commit('RESET_EMAIL_EXIT', false)
-        firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-            .then(
-                userCredential => {
-                    var user = userCredential.user;
-                    commit('SIGNUP_SUCCESS', true)
+    signUp({
+        commit
+    }, payload) {
+        commit('RESET_EMAIL_EXIT', false)        firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
+                    .then(
+                        userCredential => {
+                            var user = userCredential.user;
+                            commit('SIGNUP_SUCCESS', true)
 
-                    user.updateProfile({
-                        displayName: payload.name,
-                        photoURL: "https://example.com/jane-q-user/profile.jpg"
-                    }).then(function() {
-                        // Update successful.
-                    }).catch(function(error) {
-                        // An error happened.
-                    });
-                })
-            .catch(
-                error => {
-                    commit('SIGNUP_SUCCESS', false)
-                    console.log(error.code)
-                    if (error.code === 'auth/email-already-in-use') {
+                            user.updateProfile({
+                                displayName: payload.name,
+                                photoURL: "https://example.com/jane-q-user/profile.jpg"
+                            }).then(function() {
+                                // Update successful.
+                            }).catch(function(error) {
+                                // An error happened.
+                            });
+                        })
+                    .catch(
+                        error => {
+                            commit('SIGNUP_SUCCESS', false)
+                            console.log(error.code)
+                            if (error.code === 'auth/email-already-in-use') {
 
-                        commit('SET_IS_EMAILEXIST', true)
-                    }
+                                commit('SET_IS_EMAILEXIST', true)
+                            }
 
-                })
+                        })
+
+/*         const command = {
+            username: payload.username,
+            email: payload.email,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            password: payload.password,
+        }
+        const json = JSON.stringify(command)
+        const blob = new Blob([json], {
+            type: 'application/json'
+        });
+
+        const data = new FormData();
+        data.append("document", blob);
+        axios({
+                method: 'POST',
+                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/create',
+                data: blob,
+            })
+
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            }); */
+
     },
 
-    signIn({ commit }, payload) {
+    signIn({
+        commit
+    }, payload) {
         console.log('in sign in')
         firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
 
-        .then(
-            userCredential => {
-                commit('SIGNIN_SUCCESS', true)
-                commit('SET_USER_NOT_FOUND', false)
-                commit('IS_ACTIVE', true)
-                const user = userCredential.user
-                console.log(user.displayName)
-                const rooms = []
-                firebase.database().ref('Rooms').child(user.uid)
-                    .on('value', (snapshot) => {
-                        snapshot.forEach((childSnapshot) => {
-                            rooms.push(childSnapshot.val())
+            .then(
+                userCredential => {
+                    commit('SIGNIN_SUCCESS', true)
+                    commit('SET_USER_NOT_FOUND', false)
+                    commit('IS_ACTIVE', true)
+                    const user = userCredential.user
+                    console.log(user.displayName)
+                    const rooms = []
+                    firebase.database().ref('Rooms').child(user.uid)
+                        .on('value', (snapshot) => {
+                            snapshot.forEach((childSnapshot) => {
+                                rooms.push(childSnapshot.val())
 
+                            });
                         });
-                    });
 
-                console.log(rooms)
-                const newUser = {
-                    id: user.uid,
-                    name: user.displayName,
-                    rooms: rooms
-                }
-                console.log(newUser.rooms)
+                    console.log(rooms)
+                    const newUser = {
+                        id: user.uid,
+                        name: user.displayName,
+                        rooms: rooms
+                    }
+                    console.log(newUser.rooms)
 
-                commit('SET_CURRENT_USER', newUser)
-            })
+                    commit('SET_CURRENT_USER', newUser)
+                })
 
 
-        .catch(
-            error => {
-                commit('IS_ACTIVE', false)
-                console.log(error.code)
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            .catch(
+                error => {
+                    commit('IS_ACTIVE', false)
+                    console.log(error.code)
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
 
-                    commit('SET_USER_NOT_FOUND', true)
-                }
-                commit('SIGNIN_SUCCESS', false)
-            })
+                        commit('SET_USER_NOT_FOUND', true)
+                    }
+                    commit('SIGNIN_SUCCESS', false)
+                })
     },
 
-    fetchRooms({ commit }, user) {
+    fetchRooms({
+        commit
+    }, user) {
         console.log('fetching....')
         if (state.user.rooms !== null) {
             state.user.rooms = []
@@ -229,7 +306,9 @@ const actions = {
 
     },
 
-    fetchDevices({ commit }, payload) {
+    fetchDevices({
+        commit
+    }, payload) {
         if (state.devices !== null) {
             state.devices = null
         }
@@ -256,7 +335,9 @@ const actions = {
     },
 
 
-    addNewRoom({ commit }, payload) {
+    addNewRoom({
+        commit
+    }, payload) {
         const newRoom = {
             userID: payload.userId,
             roomName: payload.roomName,
@@ -272,7 +353,9 @@ const actions = {
 
     },
 
-    addDevice({ commit }, payload) {
+    addDevice({
+        commit
+    }, payload) {
         var newDevice = {
             roomId: payload.roomId,
             deviceName: payload.deviceName,
@@ -287,59 +370,67 @@ const actions = {
 
     },
 
-    deleteRoom({ commit }, payload) {
+    deleteRoom({
+        commit
+    }, payload) {
         if (state.user.rooms !== null) {
             state.user.rooms = []
         }
         var ref = firebase.database().ref('Rooms').child(payload.userId)
 
-        .on('value', (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-                if (childSnapshot.key === payload.roomId) {
-                    childSnapshot.ref.remove()
-                }
+            .on('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.key === payload.roomId) {
+                        childSnapshot.ref.remove()
+                    }
+                });
             });
-        });
 
     },
 
-    fetchCurrentRoom({ commit }, payload) {
+    fetchCurrentRoom({
+        commit
+    }, payload) {
         var room = {}
 
         firebase.database().ref('Rooms').child(payload.userId)
 
-        .on('value', (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-                if (childSnapshot.key === payload.roomId) {
-                    room = childSnapshot.val()
-                }
-                console.log(room)
+            .on('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.key === payload.roomId) {
+                        room = childSnapshot.val()
+                    }
+                    console.log(room)
 
-                commit('SET_CURRENT_ROOM', room)
+                    commit('SET_CURRENT_ROOM', room)
+                });
             });
-        });
     },
 
-    addToUserFavorite({ commit }, payload) {
+    addToUserFavorite({
+        commit
+    }, payload) {
 
         firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Devices')
 
-        .on('value', (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-                if (childSnapshot.key === payload.deviceId) {
-                    var currentDevice = childSnapshot.val()
-                }
+            .on('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.key === payload.deviceId) {
+                        var currentDevice = childSnapshot.val()
+                    }
 
-                firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Favorites').push(currentDevice)
-                    .catch((err) => {
-                        console.log(err.message)
-                    })
+                    firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Favorites').push(currentDevice)
+                        .catch((err) => {
+                            console.log(err.message)
+                        })
+                });
             });
-        });
 
     },
 
-    fetchFavorites({ commit }, payload) {
+    fetchFavorites({
+        commit
+    }, payload) {
         console.log('fetching favorites...')
         state.favorites = null;
         const fav = []
@@ -365,7 +456,9 @@ const actions = {
 
     },
 
-    logout({ commit }) {
+    logout({
+        commit
+    }) {
         commit('IS_ACTIVE', false)
 
         commit('LOGOUT', true)
