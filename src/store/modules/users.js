@@ -272,6 +272,32 @@ const actions = {
                     }
                     commit('SIGNIN_SUCCESS', false)
                 })
+
+        /* 
+                const command = {
+            username: payload.username,
+            password: payload.password,
+        }
+        const json = JSON.stringify(command)
+        const blob = new Blob([json], {
+            type: 'application/json'
+        });
+
+        const data = new FormData();
+        data.append("document", blob);
+        axios({
+                method: 'PUT',
+                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/login',
+                data: blob,
+            })
+            .then(
+                userCredential => {
+                    commit('SIGNIN_SUCCESS', true)
+                    commit('SET_USER_NOT_FOUND', false)
+                    commit('IS_ACTIVE', true)
+                    const user = userCredential.user
+                    console.log(user.displayName)
+                */
     },
 
     fetchRooms({
