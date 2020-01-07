@@ -1,6 +1,6 @@
  <template>
          <div class="container-devices" >
-                <v-card class="device-contain" v-for="(device,index) in houseDevices" :key="index"> 
+                <v-card class="device-contain" v-for="(device,index) in this.testRooms[0]" :key="index"> 
                     <div class="device-image">
 <!--                            <img :src="require(`@/assets/${device.image.imageUrl}.jpg`)" alt="Avatar" style="height: 50px; width:90%">
  -->                    </div>
@@ -22,7 +22,7 @@
 
 <script>
 import {createNamespacedHelpers} from 'vuex'
-const {mapGetters} = createNamespacedHelpers('test_house')
+const {mapGetters} = createNamespacedHelpers('users')
 import {
     mdiDelete,
     mdiHeart
@@ -39,19 +39,27 @@ import {
         icons: {
                 mdiDelete,
                 mdiHeart
-            },
+        },
+        devices: []
       }
     },
     created(){
     },
 
     computed:{
-        ...mapGetters(['houseDevices'])
+        ...mapGetters(['testRooms'])
     },
 
-    watch:{
-     
-    },
+     watch:{
+     testRooms(v){
+         console.log('testtt')
+         if(v !== null || v !== undefined){
+             this.devices = this.testRooms[0]
+             console.log(this.testRooms[0])
+             console.log(this.testRooms.listOfDevices)
+         }
+     }
+    }, 
 
     methods:{
     

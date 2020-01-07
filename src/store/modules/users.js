@@ -14,6 +14,10 @@ const state = {
     user_not_found: false,
     signUpSuccessAlert: false,
     signInSuccessAlert: false,
+    house: null,
+    houseAccess: false,
+    rooms: [],
+    testRooms: [],
     devices: [],
     favorites: [],
 
@@ -22,31 +26,26 @@ const state = {
             deviceId: '01',
             status: 0,
             deviceName: 'Indoor Lamp',
-            flag: false
         },
         {
             deviceId: '02',
             status: 0,
             deviceName: 'Outdoor Lamp',
-            flag: false
         },
         {
             deviceId: '06',
             status: 0,
             deviceName: 'Stove',
-            flag: false
         },
         {
             deviceId: '08',
             status: 0,
             deviceName: 'Window',
-            flag: false
         },
         {
             deviceId: '09',
             status: 0,
             deviceName: 'Radiator',
-            flag: false
         },
 
     ],
@@ -60,21 +59,18 @@ const state = {
         name: 'Fire alarm',
         type: 'Alarm',
         status: 0,
-        flag: false
     },
     alarmWaterLeakage: {
         deviceID: 2,
         name: 'House alarm',
         type: 'Alarm',
         status: 1,
-        flag: false
     },
     alarmHouseBreakin: {
         deviceID: 3,
         name: 'Water Leakage',
         type: 'Alarm',
         status: 1,
-        flag: false
     },
 }
 
@@ -116,7 +112,11 @@ const getters = {
     userName(state) {
         return state.userName
     },
+    houseAccess: state => state.houseAccess,
 
+    house: state => state.house,
+
+    testRooms: state => state.testRooms,
 
     houseDevices: state => state.houseDevices,
     alarms: state => state.alarms,
@@ -129,35 +129,36 @@ const getters = {
 
 const actions = {
 
-    accessHouse({
+    async accessHouse({
         commit
     }, payload) {
-        const command = {
-            username: payload.userName,
-            token: payload.token,
-            houseName: payload.houseName
-        }
-        const json = JSON.stringify(command)
-        const blob = new Blob([json], {
-            type: 'application/json'
-        });
 
-        const data = new FormData();
-        data.append("document", blob);
-        axios({
+        await axios({
                 method: 'GET',
-                url: 'http://194.47.40.234:5678/HouseServer_war_exploded/service/web/house/' + payload.userName + '/' + '501dd60098c34007bb220853fc4e134b' + '/' + payload.houseName
+                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/web/house/' + payload.userName + '/' + '501dd60098c34007bb220853fc4e134b' + '/' + payload.houseName
+                    //url: 'http://194.47.40.234:5678/HouseServer_war_exploded/service/web/house/' + payload.userName + '/' + '501dd60098c34007bb220853fc4e134b' + '/' + payload.houseName
             })
-            .then(function (response) {
+            .then(function(response) {
                 if (response.data.result != 0) {
-                    console.log(response.data);
+                    const house = {
+                        houseName: response.data.houseName,
+                        houseId: response.data.houseID
+                    }
+                    console.log(house)
+                    const room = response.data.listOfRooms
+                    console.log(room);
+                    commit('SET_HOUSE', house)
+                    commit('SET_ROOMS', room)
+                    commit('HOUSEACCESS', true)
 
                 } else {
                     console.log('failed');
+                    commit('HOUSEACCESS', false)
                 }
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 console.log(error);
+                commit('HOUSEACCESS', false)
             });
     },
 
@@ -182,13 +183,13 @@ const actions = {
                 url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/house',
                 data: blob,
             })
-            .then(function (response) {
+            .then(function(response) {
                 if (response.data.result == 1) {
                     console.log(response.data);
 
                 } else {}
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 console.log(error);
             });
     },
@@ -205,10 +206,10 @@ const actions = {
         }
 
         axios.put("https://jsonplaceholder.typicode.com/todos/1", todo)
-            .then(function (response) {
+            .then(function(response) {
                 console.log(response);
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 console.log(error);
             });
 
@@ -283,12 +284,12 @@ const actions = {
         const data = new FormData();
         data.append("document", blob);
         axios({
-                method: 'POST',
-                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/create',
-                data: blob,
-            })
+            method: 'POST',
+            url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/create',
+            data: blob,
+        })
 
-            .then(function (response) {
+        .then(function(response) {
                 console.log(response.data.result);
                 if (response.data.result == 1) {
                     commit('SIGNUP_SUCCESS', true)
@@ -296,57 +297,57 @@ const actions = {
                     commit('SIGNUP_SUCCESS', false)
                 }
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 commit('SIGNUP_SUCCESS', false)
                 console.log(error);
             });
 
     },
 
-    signIn({
+    async signIn({
         commit
     }, payload) {
         console.log('in sign in')
-        /* firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+            /* firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
 
-            .then(
-                userCredential => {
-                    commit('SIGNIN_SUCCESS', true)
-                    commit('SET_USER_NOT_FOUND', false)
-                    commit('IS_ACTIVE', true)
-                    const user = userCredential.user
-                    console.log(user.displayName)
-                    const rooms = []
-                    firebase.database().ref('Rooms').child(user.uid)
-                        .on('value', (snapshot) => {
-                            snapshot.forEach((childSnapshot) => {
-                                rooms.push(childSnapshot.val())
+                .then(
+                    userCredential => {
+                        commit('SIGNIN_SUCCESS', true)
+                        commit('SET_USER_NOT_FOUND', false)
+                        commit('IS_ACTIVE', true)
+                        const user = userCredential.user
+                        console.log(user.displayName)
+                        const rooms = []
+                        firebase.database().ref('Rooms').child(user.uid)
+                            .on('value', (snapshot) => {
+                                snapshot.forEach((childSnapshot) => {
+                                    rooms.push(childSnapshot.val())
 
+                                });
                             });
-                        });
 
-                    console.log(rooms)
-                    const newUser = {
-                        id: user.uid,
-                        name: user.displayName,
-                        rooms: rooms
-                    }
-                    console.log(newUser.rooms)
+                        console.log(rooms)
+                        const newUser = {
+                            id: user.uid,
+                            name: user.displayName,
+                            rooms: rooms
+                        }
+                        console.log(newUser.rooms)
 
-                    commit('SET_CURRENT_USER', newUser)
-                })
+                        commit('SET_CURRENT_USER', newUser)
+                    })
 
 
-            .catch(
-                error => {
-                    commit('IS_ACTIVE', false)
-                    console.log(error.code)
-                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                .catch(
+                    error => {
+                        commit('IS_ACTIVE', false)
+                        console.log(error.code)
+                        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
 
-                        commit('SET_USER_NOT_FOUND', true)
-                    }
-                    commit('SIGNIN_SUCCESS', false)
-                }) */
+                            commit('SET_USER_NOT_FOUND', true)
+                        }
+                        commit('SIGNIN_SUCCESS', false)
+                    }) */
 
 
         const command = {
@@ -360,12 +361,13 @@ const actions = {
 
         const data = new FormData();
         data.append("document", blob);
-        axios({
+        //await axios.put('http://194.47.40.234:5678/HouseServer_war_exploded/service/user/login', blob)
+        await axios({
                 method: 'PUT',
                 url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/login',
                 data: blob,
             })
-            .then(function (response) {
+            .then(function(response) {
                 if (response.data.result == 1) {
                     commit('IS_ACTIVE', true)
                     commit('SIGNIN_SUCCESS', true)
@@ -378,7 +380,7 @@ const actions = {
                 }
                 console.log(response);
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 commit('SIGNIN_SUCCESS', false)
                 console.log(error);
             });
@@ -496,13 +498,13 @@ const actions = {
         }
         var ref = firebase.database().ref('Rooms').child(payload.userId)
 
-            .on('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    if (childSnapshot.key === payload.roomId) {
-                        childSnapshot.ref.remove()
-                    }
-                });
+        .on('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                if (childSnapshot.key === payload.roomId) {
+                    childSnapshot.ref.remove()
+                }
             });
+        });
 
     },
 
@@ -513,16 +515,16 @@ const actions = {
 
         firebase.database().ref('Rooms').child(payload.userId)
 
-            .on('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    if (childSnapshot.key === payload.roomId) {
-                        room = childSnapshot.val()
-                    }
-                    console.log(room)
+        .on('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                if (childSnapshot.key === payload.roomId) {
+                    room = childSnapshot.val()
+                }
+                console.log(room)
 
-                    commit('SET_CURRENT_ROOM', room)
-                });
+                commit('SET_CURRENT_ROOM', room)
             });
+        });
     },
 
     addToUserFavorite({
@@ -531,18 +533,18 @@ const actions = {
 
         firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Devices')
 
-            .on('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    if (childSnapshot.key === payload.deviceId) {
-                        var currentDevice = childSnapshot.val()
-                    }
+        .on('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                if (childSnapshot.key === payload.deviceId) {
+                    var currentDevice = childSnapshot.val()
+                }
 
-                    firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Favorites').push(currentDevice)
-                        .catch((err) => {
-                            console.log(err.message)
-                        })
-                });
+                firebase.database().ref('Rooms').child(payload.userId).child(payload.roomId).child('Favorites').push(currentDevice)
+                    .catch((err) => {
+                        console.log(err.message)
+                    })
             });
+        });
 
     },
 
@@ -640,9 +642,13 @@ const mutations = {
         state.favorites = payload
     },
 
-    SET_USERNAME(state, payload) {
-        state.userName = payload
-    }
+    SET_USERNAME: (state, payload) => state.userName = payload,
+
+    SET_HOUSE: (state, payload) => state.house = payload,
+
+    SET_ROOMS: (state, payload) => state.testRooms = payload,
+
+    HOUSEACCESS: (state, oskar) => state.houseAccess = oskar
 
 }
 

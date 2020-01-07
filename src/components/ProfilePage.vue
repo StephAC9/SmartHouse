@@ -118,15 +118,18 @@ export default {
     dialog2: false,
     houseName1: "",
     houseName2: "",
-    housePassword: ""
+    housePassword: "",
+    houseAccessGranted: false,
   }),
 
   computed: {
-    ...mapGetters(["getCurrentOwner", "isTokenExpired", "userName"]),
-    ...mapGetters("getHouses")
+    ...mapGetters(["userName",'houseAccess']),
+    //...mapGetters("getHouses")
   },
 
   watch: {
+  
+  
     //   isTokenExpired(val){
     //     console.log('in ownerpage')
     //     console.log('isTokenExpired: '+val)
@@ -150,6 +153,7 @@ export default {
     },
 
     accessHouse() {
+      console.log('In Access House Method')
       this.dialog2 = false;
       const token = localStorage.getItem("token");
       this.$store.dispatch("users/accessHouse", {
@@ -157,6 +161,12 @@ export default {
         houseName: this.houseName2,
         token: token
       });
+        if(this.houseAccess){
+        console.log('House access: '+this.houseAccess)
+        this.$router.push("/testhouse");
+      }else{
+        console.log('Errorrrr!!')
+      } 
     },
     addHouse() {
       this.dialog1 = false;
@@ -167,6 +177,7 @@ export default {
         password: this.housePassword,
         token: token
       });
+
     }
   }
 };
