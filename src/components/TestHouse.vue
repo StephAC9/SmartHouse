@@ -9,7 +9,7 @@
                     </div>
                     <div class="container-action">
                         <div>
-                            <v-switch v-model="device.flag" color="yellow" style="height: 20px"></v-switch>
+                            <v-switch v-model="device.status" color="yellow" style="height: 20px" @change="toggleDevice(device.deviceID,device.status)"></v-switch>
                         </div>
                         <div style="text-align:end">
                              <v-icon color="rgb(255, 50, 50,1)" left style="width:20px" >{{ icons.mdiDelete }}</v-icon>
@@ -40,14 +40,48 @@ import {
                 mdiDelete,
                 mdiHeart
         },
-        devices: []
+        devices: [],
+        status: 0
       }
     },
+
+
     created(){
+        const token = localStorage.getItem('token')
+     const timerID = setInterval(() => 
+     this.$store.dispatch('users/fetchAlarms',{houseID: this.house.houseId, token: token, userName: this.userName})
+     , 5000);
+     //clearInterval(timerID)
+    },
+
+    mounted(){
+        const token = localStorage.getItem('token')
+        console.log('username: '+this.userName)
+           console.log('token: '+token)
+           console.log('HouseId: '+this.house.houseId)
+        this.$store.dispatch('users/fetchSensors',{houseID: this.house.houseId, token: token, userName: this.userName})
+    },
+
+    methods:{
+        toggleDevice(deviceId,currentStatus){
+            if(currentStatus == true){
+                this.status = 1
+            }else this.status = 0
+
+           const token = localStorage.getItem('token')
+           console.log('current device status: '+currentStatus)
+           console.log('device status: '+this.status)
+           console.log('device id: '+deviceId)
+           console.log('username: '+this.userName)
+           console.log('device status: '+token)
+
+            this.$store.dispatch('users/changeDeviceStatus',{token: token, userName: this.userName,deviceId: deviceId, command: this.status})
+
+        }
     },
 
     computed:{
-        ...mapGetters(['testRooms'])
+        ...mapGetters(['testRooms','userName','house'])
     },
 
      watch:{
@@ -60,10 +94,6 @@ import {
          }
      }
     }, 
-
-    methods:{
-    
-    }
   }
 </script>
 

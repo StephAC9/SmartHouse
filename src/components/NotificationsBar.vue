@@ -14,7 +14,7 @@
 
 <script>
 import {createNamespacedHelpers} from 'vuex'
-const {mapGetters} = createNamespacedHelpers('test_house')
+const {mapGetters} = createNamespacedHelpers('users')
 import Favorites from './Favorites'
 import House from './House'
   export default {

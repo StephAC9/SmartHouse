@@ -20,58 +20,10 @@ const state = {
     testRooms: [],
     devices: [],
     favorites: [],
-
-
-    houseDevices: [{
-            deviceId: '01',
-            status: 0,
-            deviceName: 'Indoor Lamp',
-        },
-        {
-            deviceId: '02',
-            status: 0,
-            deviceName: 'Outdoor Lamp',
-        },
-        {
-            deviceId: '06',
-            status: 0,
-            deviceName: 'Stove',
-        },
-        {
-            deviceId: '08',
-            status: 0,
-            deviceName: 'Window',
-        },
-        {
-            deviceId: '09',
-            status: 0,
-            deviceName: 'Radiator',
-        },
-
-    ],
-    sensor: {
-        internalTemp: 24.6,
-        externalTemp: -5,
-        electricalConsumption: 400
-    },
-    alarmFire: {
-        deviceID: 1,
-        name: 'Fire alarm',
-        type: 'Alarm',
-        status: 0,
-    },
-    alarmWaterLeakage: {
-        deviceID: 2,
-        name: 'House alarm',
-        type: 'Alarm',
-        status: 1,
-    },
-    alarmHouseBreakin: {
-        deviceID: 3,
-        name: 'Water Leakage',
-        type: 'Alarm',
-        status: 1,
-    },
+    sensor: {},
+    breakInAlarm: null,
+    fireAlarm: null,
+    waterLeakageAlarm: null,
 }
 
 
@@ -121,9 +73,9 @@ const getters = {
     houseDevices: state => state.houseDevices,
     alarms: state => state.alarms,
     sensor: state => state.sensor,
-    alarmFire: state => state.alarmFire,
-    alarmWaterLeakage: state => state.alarmWaterLeakage,
-    alarmHouseBreakin: state => state.alarmHouseBreakin
+    alarmFire: state => state.fireAlarm,
+    alarmWaterLeakage: state => state.waterLeakageAlarm,
+    alarmHouseBreakin: state => state.breakInAlarm
 
 }
 
@@ -136,7 +88,6 @@ const actions = {
         await axios({
                 method: 'GET',
                 url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/web/house/' + payload.userName + '/' + '501dd60098c34007bb220853fc4e134b' + '/' + payload.houseName
-                    //url: 'http://194.47.40.234:5678/HouseServer_war_exploded/service/web/house/' + payload.userName + '/' + '501dd60098c34007bb220853fc4e134b' + '/' + payload.houseName
             })
             .then(function(response) {
                 if (response.data.result != 0) {
@@ -162,7 +113,7 @@ const actions = {
             });
     },
 
-    addHouse({
+    async addHouse({
         commit
     }, payload) {
         const command = {
@@ -178,7 +129,7 @@ const actions = {
 
         const data = new FormData();
         data.append("document", blob);
-        axios({
+        await axios({
                 method: 'POST',
                 url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/house',
                 data: blob,
@@ -192,6 +143,70 @@ const actions = {
             .catch(function(error) {
                 console.log(error);
             });
+    },
+
+    async fetchSensors({ commit }, payload) {
+        await axios({
+                method: 'GET',
+                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/param/update/sensor/' + payload.userName + '/' + payload.token + '/' + payload.houseID
+            })
+            .then(function(response) {
+                console.log(response.data);
+                const sensor = {
+                    internalTemp: response.data.internalTemp,
+                    externalTemp: response.data.externalTemp,
+                    electricalConsumption: response.data.electricalConsumption
+                }
+                commit('SET_SENSOR', sensor)
+            }).catch(function(error) {
+                console.log(error);
+            })
+
+    },
+
+    async fetchAlarms({ commit }, payload) {
+        await axios({
+                method: 'GET',
+                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/param/update/alarm/' + payload.userName + '/' + payload.token + '/' + payload.houseID
+            })
+            .then(function(response) {
+                console.log(response.data);
+                const fireAlarm = response.data[2]
+                const waterLeakageAlarm = response.data[0]
+                const houseBreakInAlarm = response.data[5]
+                console.log(fireAlarm)
+                console.log(waterLeakageAlarm)
+                console.log(houseBreakInAlarm)
+
+                commit('SET_FIRE_ALARM', fireAlarm)
+                commit('SET_WATER_ALARM', waterLeakageAlarm)
+                commit('SET_BREAKIN_ALARM', houseBreakInAlarm)
+            }).catch(function(error) {
+                console.log(error);
+            })
+
+    },
+
+
+    async changeDeviceStatus({ commit }, payload) {
+        const command = {
+            username: payload.userName,
+            deviceID: payload.deviceId,
+            command: payload.command,
+            token: payload.token
+        }
+        console.log(command)
+        axios.put("http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/device/command", command)
+            .then(function(response) {
+                console.log(response);
+                const device = {
+                    status: payload.command,
+                    id: payload.deviceId
+                }
+                commit('SET_DEVICE_STATUS', device)
+            }).catch(function(error) {
+                console.log(error);
+            })
     },
 
     async lampSwitch({
@@ -580,8 +595,11 @@ const actions = {
         commit
     }) {
         commit('IS_ACTIVE', false)
-
         commit('LOGOUT', true)
+        commit('SET_FIRE_ALARM', null)
+        commit('SET_WATER_ALARM', null)
+        commit('SET_BREAKIN_ALARM', null)
+            //commit('SET_SENSOR', null)
 
     },
 
@@ -648,7 +666,22 @@ const mutations = {
 
     SET_ROOMS: (state, payload) => state.testRooms = payload,
 
-    HOUSEACCESS: (state, oskar) => state.houseAccess = oskar
+    HOUSEACCESS: (state, oskar) => state.houseAccess = oskar,
+
+    SET_DEVICE_STATUS: (state, payload) => {
+        state.testRooms[0].listOfDevices
+            .forEach(device => {
+                if (device.deviceID == payload.deviceId)
+                    device.status = payload.status
+            });
+    },
+
+    //SET_ALARMS: (state, payload) => state.alarms = payload,
+    SET_SENSOR: (state, payload) => state.sensor = payload,
+    SET_BREAKIN_ALARM: (state, payload) => state.breakInAlarm = payload,
+    SET_FIRE_ALARM: (state, payload) => state.fireAlarm = payload,
+    SET_WATER_ALARM: (state, payload) => state.waterLeakageAlarm = payload,
+
 
 }
 

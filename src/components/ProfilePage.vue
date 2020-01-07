@@ -128,21 +128,9 @@ export default {
   },
 
   watch: {
-  
-  
-    //   isTokenExpired(val){
-    //     console.log('in ownerpage')
-    //     console.log('isTokenExpired: '+val)
-    //   }
+
   },
 
-  // created(){
-  //   this.$store.dispatch('test/isTokenExpired')
-  //   this.$store.dispatch('test/fetchFavorites')
-  //   if(this.getCurrentOwner.name !== 'Visitor/ No one logged in'){
-  //   const timerID = setInterval(() => this.$store.dispatch('test/stoveOn'), 5000);
-  //   }else clearInterval(timerID)
-  // },
 
   methods: {
     goInHouse(msg) {
