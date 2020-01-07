@@ -62,7 +62,7 @@ import House from './House'
         font-size: 11px
     }
     .data{
-        color: azure;
+        color: rgb(230, 119, 15);
         font-size: 11px
     }
 </style>

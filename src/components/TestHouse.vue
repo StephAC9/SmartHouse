@@ -1,6 +1,6 @@
  <template>
          <div class="container-devices" >
-                <v-card class="device-contain" v-for="(device,index) in this.testRooms[0]" :key="index"> 
+                <v-card class="device-contain" v-for="(device,index) in this.testRooms[0].listOfDevices" :key="index"> 
                     <div class="device-image">
 <!--                            <img :src="require(`@/assets/${device.image.imageUrl}.jpg`)" alt="Avatar" style="height: 50px; width:90%">
  -->                    </div>
@@ -55,7 +55,7 @@ import {
          console.log('testtt')
          if(v !== null || v !== undefined){
              this.devices = this.testRooms[0]
-             console.log(this.testRooms[0])
+             console.log(this.testRooms[0].listOfDevices)
              console.log(this.testRooms.listOfDevices)
          }
      }
