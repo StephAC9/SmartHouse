@@ -139,6 +139,7 @@ export default {
       this.itemTitle = value;
       switch (this.itemTitle) {
         case "Profile":
+          this.$router.push("/profilepage")
           break;
         case "Log out":
           this.signOut();
