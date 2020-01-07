@@ -151,7 +151,6 @@ const actions = {
             .then(function (response) {
                 if (response.data.result != 0) {
                     console.log(response.data);
-
                 } else {
                     console.log('failed');
                 }
