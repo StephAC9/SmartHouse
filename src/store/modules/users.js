@@ -320,6 +320,7 @@ const actions = {
             .then(function(response) {
                 if (response.data.result == 1) {
                     commit('SIGNIN_SUCCESS', true)
+                    commit('IS_ACTIVE', true)
                     const token = response.data.token
                     localStorage.setItem('token', token)
                     const userName = response.data.username
@@ -331,6 +332,7 @@ const actions = {
             })
             .catch(function(error) {
                 commit('SIGNIN_SUCCESS', false)
+                commit('IS_ACTIVE', false)
                 console.log(error);
             });
 
