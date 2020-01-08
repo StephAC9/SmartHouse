@@ -1,6 +1,10 @@
  <template>
+    <div>
+        <FireAlert v-if="alarmFire.status == 1" style="margin:20px"></FireAlert>
+        <WaterLeakAlert v-if="alarmWaterLeakage.status == 1" style="margin:20px"></WaterLeakAlert>
+        <HouseBreakInAlert v-if="alarmHouseBreakin.status == 1" style="margin:20px"></HouseBreakInAlert>
          <div class="container-devices" >
-                <v-card class="device-contain" v-for="(device,index) in this.testRooms[0].listOfDevices" :key="index"> 
+                 <v-card class="device-contain" v-for="(device,index) in this.testRooms[0].listOfDevices" :key="index"> 
                     <div class="device-image">
 <!--                            <img :src="require(`@/assets/${device.image.imageUrl}.jpg`)" alt="Avatar" style="height: 50px; width:90%">
  -->                    </div>
@@ -18,9 +22,14 @@
             </v-card>
          </div>
 
+     </div>
+
 </template> 
 
 <script>
+import FireAlert from './FireAlert'
+import WaterLeakAlert from './WaterLeakAlert'
+import HouseBreakInAlert from './HouseBreakInAlert'
 import {createNamespacedHelpers} from 'vuex'
 const {mapGetters} = createNamespacedHelpers('users')
 import {
@@ -29,6 +38,11 @@ import {
   } from '@mdi/js'
   export default {
     name:'TestHouse',
+    components:{
+        FireAlert,
+        WaterLeakAlert,
+        HouseBreakInAlert
+    },
 
     data () {
       return {
@@ -41,16 +55,17 @@ import {
                 mdiHeart
         },
         devices: [],
-        status: 0
+        status: 0,
       }
     },
 
 
     created(){
         const token = localStorage.getItem('token')
-     const timerID = setInterval(() => 
-     this.$store.dispatch('users/fetchAlarms',{houseID: this.house.houseId, token: token, userName: this.userName})
-     , 5000);
+        console.log('Is active value: '+this.isActive)
+            const timerID = setInterval(() => 
+            this.$store.dispatch('users/fetchAlarms',{houseID: this.house.houseId, token: token, userName: this.userName})
+            , 5000);
      //clearInterval(timerID)
     },
 
@@ -81,7 +96,7 @@ import {
     },
 
     computed:{
-        ...mapGetters(['testRooms','userName','house'])
+        ...mapGetters(['testRooms','userName','house','alarmWaterLeakage','alarmFire','alarmHouseBreakin','isActive'])
     },
 
      watch:{
@@ -92,7 +107,7 @@ import {
              console.log(this.testRooms[0].listOfDevices)
              console.log(this.testRooms.listOfDevices)
          }
-     }
+     },
     }, 
   }
 </script>

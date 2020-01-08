@@ -84,10 +84,10 @@ const actions = {
     async accessHouse({
         commit
     }, payload) {
-
         await axios({
                 method: 'GET',
-                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/web/house/' + payload.userName + '/' + '501dd60098c34007bb220853fc4e134b' + '/' + payload.houseName
+                url: 'http://ec2-13-53-175-23.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/web/house/' + payload.userName + '/' + '501dd60098c34007bb220853fc4e134b' + '/' + payload.houseName
+
             })
             .then(function(response) {
                 if (response.data.result != 0) {
@@ -101,15 +101,18 @@ const actions = {
                     commit('SET_HOUSE', house)
                     commit('SET_ROOMS', room)
                     commit('HOUSEACCESS', true)
+                    commit('IS_ACTIVE', true)
 
                 } else {
                     console.log('failed');
                     commit('HOUSEACCESS', false)
+                    commit('IS_ACTIVE', false)
                 }
             })
             .catch(function(error) {
                 console.log(error);
                 commit('HOUSEACCESS', false)
+                commit('IS_ACTIVE', false)
             });
     },
 
@@ -131,12 +134,12 @@ const actions = {
         data.append("document", blob);
         await axios({
                 method: 'POST',
-                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/house',
-                data: blob,
+                url: 'http://ec2-13-53-175-23.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/house',
+                data: blob
             })
             .then(function(response) {
+                console.log(response.data);
                 if (response.data.result == 1) {
-                    console.log(response.data);
 
                 } else {}
             })
@@ -148,7 +151,7 @@ const actions = {
     async fetchSensors({ commit }, payload) {
         await axios({
                 method: 'GET',
-                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/param/update/sensor/' + payload.userName + '/' + payload.token + '/' + payload.houseID
+                url: 'http://ec2-13-53-175-23.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/param/update/sensor/' + payload.userName + '/' + payload.token + '/' + payload.houseID
             })
             .then(function(response) {
                 console.log(response.data);
@@ -167,7 +170,7 @@ const actions = {
     async fetchAlarms({ commit }, payload) {
         await axios({
                 method: 'GET',
-                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/param/update/alarm/' + payload.userName + '/' + payload.token + '/' + payload.houseID
+                url: 'http://ec2-13-53-175-23.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/param/update/alarm/' + payload.userName + '/' + payload.token + '/' + payload.houseID
             })
             .then(function(response) {
                 console.log(response.data);
@@ -196,7 +199,8 @@ const actions = {
             token: payload.token
         }
         console.log(command)
-        axios.put("http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/device/command", command)
+        axios.put("http://ec2-13-53-175-23.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/device/command", command)
+            //axios.put("http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/device/command", command )
             .then(function(response) {
                 console.log(response);
                 const device = {
@@ -258,32 +262,6 @@ const actions = {
     signUp({
         commit
     }, payload) {
-        /*commit('RESET_EMAIL_EXIT', false) firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-                    .then(
-                        userCredential => {
-                            var user = userCredential.user;
-                            commit('SIGNUP_SUCCESS', true)
-
-                            user.updateProfile({
-                                displayName: payload.name,
-                                photoURL: "https://example.com/jane-q-user/profile.jpg"
-                            }).then(function() {
-                                // Update successful.
-                            }).catch(function(error) {
-                                // An error happened.
-                            });
-                        })
-                    .catch(
-                        error => {
-                            commit('SIGNUP_SUCCESS', false)
-                            console.log(error.code)
-                            if (error.code === 'auth/email-already-in-use') {
-
-                                commit('SET_IS_EMAILEXIST', true)
-                            } */
-
-        // })
-
         const command = {
             username: payload.username,
             email: payload.email,
@@ -300,7 +278,7 @@ const actions = {
         data.append("document", blob);
         axios({
             method: 'POST',
-            url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/create',
+            url: 'http://ec2-13-53-175-23.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/create',
             data: blob,
         })
 
@@ -323,48 +301,6 @@ const actions = {
         commit
     }, payload) {
         console.log('in sign in')
-            /* firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-
-                .then(
-                    userCredential => {
-                        commit('SIGNIN_SUCCESS', true)
-                        commit('SET_USER_NOT_FOUND', false)
-                        commit('IS_ACTIVE', true)
-                        const user = userCredential.user
-                        console.log(user.displayName)
-                        const rooms = []
-                        firebase.database().ref('Rooms').child(user.uid)
-                            .on('value', (snapshot) => {
-                                snapshot.forEach((childSnapshot) => {
-                                    rooms.push(childSnapshot.val())
-
-                                });
-                            });
-
-                        console.log(rooms)
-                        const newUser = {
-                            id: user.uid,
-                            name: user.displayName,
-                            rooms: rooms
-                        }
-                        console.log(newUser.rooms)
-
-                        commit('SET_CURRENT_USER', newUser)
-                    })
-
-
-                .catch(
-                    error => {
-                        commit('IS_ACTIVE', false)
-                        console.log(error.code)
-                        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-
-                            commit('SET_USER_NOT_FOUND', true)
-                        }
-                        commit('SIGNIN_SUCCESS', false)
-                    }) */
-
-
         const command = {
             username: payload.username,
             password: payload.password,
@@ -376,15 +312,13 @@ const actions = {
 
         const data = new FormData();
         data.append("document", blob);
-        //await axios.put('http://194.47.40.234:5678/HouseServer_war_exploded/service/user/login', blob)
         await axios({
                 method: 'PUT',
-                url: 'http://ec2-13-48-28-82.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/login',
+                url: 'http://ec2-13-53-175-23.eu-north-1.compute.amazonaws.com:9475/HouseServer_war_exploded/service/user/login',
                 data: blob,
             })
             .then(function(response) {
                 if (response.data.result == 1) {
-                    commit('IS_ACTIVE', true)
                     commit('SIGNIN_SUCCESS', true)
                     const token = response.data.token
                     localStorage.setItem('token', token)
@@ -399,14 +333,7 @@ const actions = {
                 commit('SIGNIN_SUCCESS', false)
                 console.log(error);
             });
-        /*    .then(
-               userCredential => {
-                   commit('SIGNIN_SUCCESS', true)
-                   commit('SET_USER_NOT_FOUND', false)
-                   commit('IS_ACTIVE', true)
-                   const user = userCredential.user
-                   console.log(user.displayName)
-               }) */
+
     },
 
     fetchRooms({

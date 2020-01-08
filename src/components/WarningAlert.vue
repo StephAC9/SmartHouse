@@ -12,8 +12,7 @@ export default {
         return{
             alertMessage: null,
         }
-    },
-
+    }
     
 }
 </script>
